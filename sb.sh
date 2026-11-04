@@ -2351,8 +2351,8 @@ update_singbox() {
 
     local archive="sing-box-${sb_ver}-linux-${cpu}${sb_lib_suffix}.tar.gz"
     # 本仓库自持源（由 sync-singbox.yml 从上游镜像），如需切回官方源，取消下行注释并注释上行
-    local url="https://github.com/jyucoeng/singbox-tools/releases/download/v${sb_ver}/${archive}"
-    # local url="https://github.com/SagerNet/sing-box/releases/download/v${sb_ver}/${archive}"
+    #local url="https://github.com/jyucoeng/singbox-tools/releases/download/v${sb_ver}/${archive}"
+    local url="https://github.com/SagerNet/sing-box/releases/download/v${sb_ver}/${archive}"
     local tmp_archive="/tmp/${archive}"
 
     check_disk_space 120 || exit 1
