@@ -2326,28 +2326,18 @@ check_disk_space() {
 # download Sing-box
 # 检测已安装版本，需要更新时下载并安装 sing-box 二进制
 update_singbox() {
-    local sb_ver current_ver
+    local sb_ver="1.14.4"
 
-    sb_ver=$(get_latest_stable_version)
-
-    if [ -z "$sb_ver" ]; then
-        red "❌ 获取 Sing-box 最新稳定版失败"
-        return 1
-    fi
-
-    # 已安装版本检测
+    # 版本检测：已安装且版本匹配则跳过下载
     if [ -x "$SINGBOX_FOLDER_PATH/sing-box" ]; then
-        current_ver=$("$SINGBOX_FOLDER_PATH/sing-box" version 2>/dev/null |
-            head -1 |
-            sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
-
+        local current_ver
+        current_ver=$("$SINGBOX_FOLDER_PATH/sing-box" version 2> /dev/null | head -1 | sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
         if [ "$current_ver" = "$sb_ver" ]; then
             green "✅ Sing-box 已安装最新版 (v${sb_ver})，跳过下载"
-            printf '%s' "$current_ver" > "$SB_VER_FILE" 2>/dev/null || true
+            printf '%s' "$current_ver" > "$SB_VER_FILE" 2> /dev/null || true
             return 0
         fi
-
-        yellow "Sing-box 版本不匹配 (当前: ${current_ver:-unknown}，最新稳定版: ${sb_ver})，开始下载新版..."
+        yellow "Sing-box 版本不匹配 (当前: ${current_ver:-unknown}，期望: ${sb_ver})，开始下载新版..."
     fi
 
     # # 自定义库（旧源），如需切回取消注释下面这行，注释掉官方下载部分
@@ -2954,31 +2944,20 @@ installsb() {
     echo
     echo "=========开始下载/安装Sing-box内核========="
 
-    # 获取最新稳定版
-    local sb_ver current_ver
-    sb_ver=$(get_latest_stable_version)
-
-    if [ -z "$sb_ver" ]; then
-        red "❌ 获取 Sing-box 最新稳定版失败"
-        return 1
-    fi
-
     # 版本检测：已安装且版本匹配则提示跳过
     if [ -x "$SINGBOX_FOLDER_PATH/sing-box" ]; then
-        current_ver=$("$SINGBOX_FOLDER_PATH/sing-box" version 2>/dev/null |
-            head -1 |
-            sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
-
+        local current_ver sb_ver
+        sb_ver="1.14.4"
+        current_ver=$("$SINGBOX_FOLDER_PATH/sing-box" version 2> /dev/null | head -1 | sed -n 's/.*\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
         if [ "$current_ver" = "$sb_ver" ]; then
-            green "✅ Sing-box 已安装最新版 (v${current_ver})，跳过下载"
-            printf '%s' "$current_ver" > "$SB_VER_FILE" 2>/dev/null || true
+            green "✅ Sing-box 已安装 (v${current_ver})，跳过下载"
+            printf '%s' "$current_ver" > "$SB_VER_FILE" 2> /dev/null || true
         else
             update_singbox
         fi
     else
         update_singbox
     fi
-}
 
     insuuid
     write2SingboxFolders
